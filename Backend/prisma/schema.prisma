@@ -1,0 +1,93 @@
+generator client {
+  provider = "prisma-client-js"
+  output   = "../src/generated/prisma"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model User {
+  id               Int         @id @default(autoincrement())
+  username         String
+  email            String      @unique
+  password         String
+  name             String
+  role             Role        @default(USER)
+  IsVerified       Boolean     @default(false)
+  lastLogin        DateTime?
+  isActive         Boolean     @default(false)
+  orders           Order[]
+  coupons          Coupon[]    @relation("UserCoupons")
+  cartItems        CartItem[]
+  products         Product[]   @relation("RetailerProducts")
+
+  // ➕ Other Metadata
+  createdAt        DateTime    @default(now())
+  resetToken       String?
+  resetTokenExpiry DateTime?
+}
+
+model Product {
+  id          Int         @id @default(autoincrement())
+  title       String
+  description String
+  price       Float
+  stock       Int
+  imageUrl    String?
+  retailer    User        @relation("RetailerProducts", fields: [retailerId], references: [id])
+  retailerId  Int
+  orders      OrderItem[]
+  createdAt   DateTime    @default(now())
+
+  CartItem CartItem[]
+}
+
+model Order {
+  id          Int         @id @default(autoincrement())
+  user        User        @relation(fields: [userId], references: [id])
+  userId      Int
+  items       OrderItem[]
+  totalAmount Float
+  couponUsed  Coupon?     @relation(fields: [couponId], references: [id])
+  couponId    Int?
+  createdAt   DateTime    @default(now())
+}
+
+model OrderItem {
+  id        Int      @id @default(autoincrement())
+  order     Order    @relation(fields: [orderId], references: [id])
+  orderId   Int
+  product   Product  @relation(fields: [productId], references: [id])
+  productId Int
+  quantity  Int
+  price     Float
+}
+
+model Coupon {
+  id         Int      @id @default(autoincrement())
+  code       String   @unique
+  discount   Float    // e.g., 0.2 for 20% off
+  assignedTo User?    @relation("UserCoupons", fields: [userId], references: [id])
+  userId     Int?
+  expiresAt  DateTime
+  used       Boolean  @default(false)
+
+  Order Order[]
+}
+
+model CartItem {
+  id        Int      @id @default(autoincrement())
+  user      User     @relation(fields: [userId], references: [id])
+  userId    Int
+  product   Product  @relation(fields: [productId], references: [id])
+  productId Int
+  quantity  Int      @default(1)
+  addedAt   DateTime @default(now())
+}
+
+enum Role {
+  USER
+  RETAILER
+}

@@ -1,0 +1,10 @@
+@import "tailwindcss";
+
+@layer components {
+  .input {
+    @apply px-4 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-[#0d6efd] transition;
+  }
+  .btn-primary {
+    @apply bg-[#0d6efd] text-white font-semibold py-2 rounded-md shadow-md hover:bg-[#0b5ed7] transition duration-300;
+  }
+}
