@@ -1,4 +1,5 @@
 import { useState } from "react";
+import { useNavigate } from "react-router-dom";
 import { motion } from "framer-motion";
 import { useAuthStore } from "../store/useAuthStore"; // adjust path if needed
 
@@ -8,6 +9,14 @@ export default function RetailerLogin() {
   const [loading, setLoading] = useState(false);
 
   const login = useAuthStore((state) => state.login);
+  const authUser = useAuthStore((state) => state.authUser);
+  const navigate = useNavigate();
+
+  // ✅ Auto-redirect if already logged in
+  if (authUser) {
+    navigate("/dashboard");
+    return null;
+  }
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -15,9 +24,11 @@ export default function RetailerLogin() {
 
     try {
       await login(email, password, "RETAILER");
-      // Optionally clear form
       setEmail("");
       setPassword("");
+
+      // ✅ Navigate to dashboard on success
+      navigate("/dashboard");
     } catch (err) {
       // Store already shows error toast
     } finally {

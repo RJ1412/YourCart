@@ -1,5 +1,6 @@
 import { useState } from "react";
 import { motion } from "framer-motion";
+import { useNavigate } from "react-router-dom";
 import { useAuthStore } from "../store/useAuthStore"; // adjust path as needed
 
 export default function UserLogin() {
@@ -8,6 +9,14 @@ export default function UserLogin() {
   const [loading, setLoading] = useState(false);
 
   const login = useAuthStore((state) => state.login);
+  const authUser = useAuthStore((state) => state.authUser);
+  const navigate = useNavigate();
+
+  // ✅ Auto-redirect if already logged in
+  if (authUser) {
+    navigate("/dashboard");
+    return null;
+  }
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -15,11 +24,13 @@ export default function UserLogin() {
 
     try {
       await login(email, password, "USER");
-      // Optionally: redirect, clear form, close modal, etc.
       setEmail("");
       setPassword("");
+
+      // ✅ Redirect to dashboard
+      navigate("/dashboard");
     } catch (err) {
-      // Errors already toasted in store
+      // Errors already handled in store
     } finally {
       setLoading(false);
     }

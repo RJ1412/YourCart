@@ -2,7 +2,7 @@ import React, { useEffect } from "react";
 import { Routes, Route } from "react-router-dom";
 import { Toaster } from "react-hot-toast";
 import { Loader } from "lucide-react";
-
+import LoggedInDashboard from "./components/LoggedInDashboard";
 import HomePage from "./pages/HomePage";
 import { useAuthStore } from "./store/useAuthStore";
 
@@ -26,6 +26,8 @@ const App = () => {
       <Toaster />
       <Routes>
         <Route path="/" element={<HomePage />} />
+        <Route path="/dashboard" element={<LoggedInDashboard />} />
+
       </Routes>
     </div>
   );

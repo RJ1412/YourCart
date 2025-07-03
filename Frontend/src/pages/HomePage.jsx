@@ -1,17 +1,21 @@
 import { useState } from "react";
 import { motion } from "framer-motion";
 import RetailerLogin from "../components/RetailerLogin";
-import UserLogin from "../components/Userlogin";
+import UserLogin from "../components/UserLogin";
 import SignUp from "../components/SignUp";
 import ForgotPassword from "../components/ForgotPassword";
 import YourCartTypeAnimation from "../components/YourCartTypeAnimation";
-import { ShoppingBag, Store, UserPlus, KeyRound } from "lucide-react";
+import { ShoppingBag, Store, UserPlus, KeyRound, User } from "lucide-react";
+import { useAuthStore } from "../store/useAuthStore";
+import LoggedInDashboard from "../components/LoggedInDashboard";
 
 export default function HomePage() {
+  const authUser = useAuthStore((s) => s.authUser);
+ 
   const [mode, setMode] = useState("user");
   const [showSignUp, setShowSignUp] = useState(false);
   const [showForgotPassword, setShowForgotPassword] = useState(false);
-
+   if (authUser) return <LoggedInDashboard />;
   const renderForm = () => {
     if (showSignUp) return <SignUp onClose={() => setShowSignUp(false)} />;
     if (showForgotPassword) return <ForgotPassword onClose={() => setShowForgotPassword(false)} />;
@@ -19,10 +23,11 @@ export default function HomePage() {
   };
 
   return (
+    
     <div className="min-h-screen w-full flex flex-col items-center justify-center px-4 py-12
       bg-gradient-to-br from-[#d0ebff] via-[#ffe3e9] to-[#f8f9fa]">
 
-      {/* ---------- Header ---------- */}
+ 
       <motion.div
         initial={{ opacity: 0, y: -40 }}
         animate={{ opacity: 1, y: 0 }}
@@ -37,7 +42,6 @@ export default function HomePage() {
         </p>
       </motion.div>
 
-      {/* ---------- Form Section ---------- */}
       <motion.div
         className="relative w-full max-w-2xl rounded-xl md:rounded-2xl p-6 md:p-8
         backdrop-blur-lg bg-white/40 shadow-lg border border-[#e7d2ca]
@@ -47,7 +51,6 @@ export default function HomePage() {
         transition={{ delay: 0.2, duration: 0.5 }}
       >
 
-        {/* ---------- Header Icon ---------- */}
         <div className="flex justify-center">
           <div className="bg-gradient-to-br from-[#d0ebff] to-[#ffe3e9] rounded-full p-4 shadow border border-[#e7d2ca]">
             {mode === "user" ? (
@@ -58,7 +61,7 @@ export default function HomePage() {
           </div>
         </div>
 
-        {/* ---------- Tabs ---------- */}
+  
         {!showSignUp && !showForgotPassword && (
           <div className="flex justify-center gap-4 mt-4">
             <button
@@ -83,13 +86,10 @@ export default function HomePage() {
             </button>
           </div>
         )}
-
-        {/* ---------- Form Content ---------- */}
         <div className="flex flex-col gap-5 mt-3">
           {renderForm()}
         </div>
 
-        {/* ---------- Links ---------- */}
         {!showSignUp && !showForgotPassword && (
           <div className="flex flex-col md:flex-row justify-center items-center gap-3 mt-6 text-sm text-[#5c3a28]">
             <button
@@ -111,7 +111,7 @@ export default function HomePage() {
         )}
       </motion.div>
 
-      {/* ---------- Footer ---------- */}
+
       <motion.div
         className="mt-12 max-w-xl text-center text-[#7b3e19] text-sm px-4 leading-relaxed"
         initial={{ opacity: 0 }}
